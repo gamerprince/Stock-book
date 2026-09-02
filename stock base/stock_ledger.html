@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://*.firebaseapp.com https://apis.google.com; connect-src 'self' http://127.0.0.1:5500 ws://127.0.0.1:5500 http://localhost:5500 ws://localhost:5500 https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://identitytoolkit.googleapis.com https://www.google-analytics.com; img-src 'self' data: https:;">
+  <title>Analytics & Stock Ledger</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for graphical analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- TOP NAVIGATION (Matched to Main Page) -->
+  <nav class="bg-gray-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center gap-2">
+          <span class="font-black text-xl tracking-tight">MARKET<span class="text-green-400"> ANALYTICS</span></span>
+        </div>
+        <div class="flex items-center gap-4 text-sm font-bold">
+          <a href="market_stock_book.html" class="inline-block bg-white text-gray-800 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition duration-200">
+            &larr; Back to Main Portal
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    
+    <!-- TOP SECTION: Business Inputs & Advisory -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+      
+      <!-- Input Form for Better Analytics -->
+      <div class="bg-indigo-50/40 p-6 rounded-2xl shadow-md border-2 border-indigo-400 border-t-8 border-t-indigo-600">
+        <h2 class="text-xl font-black text-indigo-900 mb-4 flex items-center gap-2">
+          <span>📈</span> Business Growth Metrics
+        </h2>
+        <p class="text-xs text-gray-500 font-bold mb-4">Input your targets and overheads to get tailored system advice.</p>
+        <form id="analytics-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Target Monthly Sales (₦)</label>
+            <input id="target-sales" type="number" placeholder="e.g., 500000" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Monthly Overhead Costs (Rent/Power) (₦)</label>
+            <input id="overhead-costs" type="number" placeholder="e.g., 50000" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" />
+          </div>
+          <button type="submit" class="w-full bg-indigo-700 text-white p-3 rounded-lg font-bold hover:bg-indigo-800 transition">
+            Generate Analysis
+          </button>
+        </form>
+      </div>
+
+      <!-- Smart Advisory Panel -->
+      <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border-2 border-green-400 border-t-8 border-t-green-600 flex flex-col justify-between">
+        <div>
+          <h2 class="text-xl font-black text-green-800 mb-2 flex items-center gap-2">
+            <span>💡</span> System Advisory & Insights
+          </h2>
+          <div id="advisory-content" class="mt-4 space-y-3 text-sm font-medium text-gray-700">
+            <p>Load your data to view system-generated business insights...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PICTORIAL DATA & CHARTS -->
+    <h2 class="text-2xl font-black text-gray-800 mb-6">Visual Analytics</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      
+      <!-- Chart 1: Inventory Categories (Pie Chart) -->
+      <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
+        <h3 class="text-sm font-bold uppercase text-gray-500 mb-4 text-center">Inventory by Category</h3>
+        <div class="relative h-64">
+          <canvas id="categoryChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: Top Selling Items (Bar Chart) -->
+      <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
+        <h3 class="text-sm font-bold uppercase text-gray-500 mb-4 text-center">Top Selling Items (By Volume)</h3>
+        <div class="relative h-64">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DETAILED LEDGER TABLE -->
+    <div class="bg-white rounded-2xl shadow-md border-2 border-slate-300 border-t-8 border-t-slate-700 overflow-hidden">
+      <div class="p-6 border-b">
+        <h2 class="text-xl font-black text-gray-800">Complete Historical Ledger</h2>
+      </div>
+      <div class="overflow-x-auto max-h-96">
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-gray-50 border-b text-xs font-bold uppercase text-gray-500 sticky top-0">
+            <tr>
+              <th class="p-4">Date</th>
+              <th class="p-4">Item Name</th>
+              <th class="p-4">Transaction Type</th>
+              <th class="p-4 text-center">Quantity</th>
+            </tr>
+          </thead>
+          <tbody id="full-ledger-body" class="divide-y divide-gray-100 text-sm">
+            <tr><td colspan="4" class="p-8 text-center text-gray-400">Loading ledger data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { listenToAuthStatus } from "./auth.js";
+    import { getUserStock, getUserSales, getUserLogs } from "./db.js";
+
+    const $ = id => document.getElementById(id);
+
+    let inventory = [];
+    let sales = [];
+    let logs = [];
+
+    listenToAuthStatus(async (user) => {
+      if (user) {
+        inventory = await getUserStock();
+        sales = await getUserSales();
+        logs = await getUserLogs();
+
+        if (inventory.length === 0) {
+          inventory = JSON.parse(localStorage.getItem(`market_inventory_${user.uid}`)) || [];
+        }
+        if (sales.length === 0) {
+          sales = JSON.parse(localStorage.getItem(`market_stock_sales_${user.uid}`)) || [];
+        }
+        if (logs.length === 0) {
+          logs = JSON.parse(localStorage.getItem(`market_stock_logs_${user.uid}`)) || [];
+        }
+
+        renderCharts();
+        renderFullLedger();
+        generateBasicAdvice();
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      $("analytics-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        generateBasicAdvice();
+      });
+    });
+
+    function renderCharts() {
+      // 1. Prepare Category Data for Pie Chart
+      const categoryCounts = {};
+      inventory.forEach(item => {
+        categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+      });
+
+      const pieCtx = $('categoryChart').getContext('2d');
+      new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(categoryCounts).length ? Object.keys(categoryCounts) : ['No Data'],
+          datasets: [{
+            data: Object.keys(categoryCounts).length ? Object.values(categoryCounts) : [1],
+            backgroundColor: ['#6366f1', '#a855f7', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#64748b'],
+            borderWidth: 0
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+
+      // 2. Prepare Sales Data for Bar Chart
+      const salesVolume = {};
+      sales.forEach(sale => {
+        salesVolume[sale.itemName] = (salesVolume[sale.itemName] || 0) + Number(sale.qty);
+      });
+      
+      const sortedSales = Object.entries(salesVolume).sort((a, b) => b[1] - a[1]).slice(0, 5); // Top 5
+
+      const barCtx = $('salesChart').getContext('2d');
+      new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: sortedSales.length ? sortedSales.map(s => s[0]) : ['No Sales Yet'],
+          datasets: [{
+            label: 'Units Sold',
+            data: sortedSales.length ? sortedSales.map(s => s[1]) : [0],
+            backgroundColor: '#10b981',
+            borderRadius: 4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    function renderFullLedger() {
+      const tbody = $("full-ledger-body");
+      if (logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400 font-bold">No historical logs found.</td></tr>`;
+        return;
+      }
+
+      // Sort logs by date descending
+      logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      tbody.innerHTML = logs.map(log => {
+        const item = inventory.find(i => i.id === log.itemId);
+        const itemName = item ? item.name : 'Unknown Item';
+        const isSale = log.type === 'sold';
+        
+        return `
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="p-4 text-sm font-semibold text-gray-600">${log.date}</td>
+            <td class="p-4 text-sm font-bold text-gray-900">${itemName}</td>
+            <td class="p-4">
+              <span class="text-xs px-2.5 py-1 rounded-full font-bold ${isSale ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                ${isSale ? 'Item Sold' : 'Stock Received'}
+              </span>
+            </td>
+            <td class="p-4 text-center font-black ${isSale ? 'text-red-600' : 'text-blue-600'}">
+              ${isSale ? '-' : '+'}${log.qty}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function generateBasicAdvice() {
+      const targetSales = Number($("target-sales").value) || 0;
+      const overhead = Number($("overhead-costs").value) || 0;
+      const content = $("advisory-content");
+
+      let totalRevenue = sales.reduce((sum, sale) => sum + Number(sale.totalAmount || 0), 0);
+      let html = `<div class="p-3 bg-gray-50 rounded-lg border border-gray-200"><strong>Current Total Revenue Logged:</strong> ₦${totalRevenue.toLocaleString()}</div>`;
+
+      // 1. Target Tracking
+      if (targetSales > 0) {
+        let percent = ((totalRevenue / targetSales) * 100).toFixed(1);
+        html += `<p class="mt-2 text-indigo-700">🎯 You have achieved <strong>${percent}%</strong> of your target monthly revenue.</p>`;
+      }
+
+      // 2. Profitability Warning
+      if (overhead > 0) {
+        if (totalRevenue < overhead) {
+          html += `<p class="mt-2 text-red-600">⚠️ <strong>Critical:</strong> Your logged revenue (₦${totalRevenue.toLocaleString()}) is currently lower than your overhead costs (₦${overhead.toLocaleString()}). Consider pushing sales on high-margin items or cutting operational costs.</p>`;
+        } else {
+          html += `<p class="mt-2 text-green-600">✅ <strong>Healthy:</strong> You have surpassed your overhead threshold, meaning the business is currently generating gross profit.</p>`;
+        }
+      }
+
+      // 3. Stock Movement Advice
+      const salesVolume = {};
+      sales.forEach(sale => { salesVolume[sale.itemName] = (salesVolume[sale.itemName] || 0) + Number(sale.qty); });
+      const sortedSales = Object.entries(salesVolume).sort((a, b) => b[1] - a[1]);
+      
+      if (sortedSales.length > 0) {
+        let topItem = sortedSales[0][0];
+        html += `<p class="mt-2">📈 <strong>Fast Mover:</strong> "${topItem}" is your most sold item. Ensure you never run out of this product as it drives consistent foot traffic.</p>`;
+      }
+
+      if (inventory.length === 0 && sales.length === 0) {
+        html = `<p class="text-gray-500">Awaiting data. Go back to the main portal and log items/sales to see insights.</p>`;
+      }
+
+      content.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

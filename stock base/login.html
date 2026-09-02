@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://*.firebaseapp.com https://apis.google.com; connect-src 'self' http://127.0.0.1:5500 ws://127.0.0.1:5500 http://localhost:5500 ws://localhost:5500 https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://identitytoolkit.googleapis.com https://www.google-analytics.com; img-src 'self' data: https:;">
+  <title>Trader Access - Market Stock Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-between text-gray-800">
+
+  <!-- TOP NAVIGATION -->
+  <nav class="bg-gray-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex justify-between items-center h-16">
+        <span class="font-black text-xl tracking-tight">MARKET<span class="text-green-400"> STOCK PORTAL</span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN AUTH CONTAINER -->
+  <div class="flex-grow flex items-center justify-center px-4 py-12">
+    <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-200 w-full max-w-md">
+      
+      <!-- TAB TOGGLES -->
+      <div class="flex border-b border-gray-200 mb-6">
+        <button id="tab-login" class="w-1/2 py-3 text-center font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
+          Sign In
+        </button>
+        <button id="tab-register" class="w-1/2 py-3 text-center font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition">
+          Register Business
+        </button>
+      </div>
+
+      <!-- STATUS ALERT BOX -->
+      <div id="auth-alert" class="hidden mb-4 p-3 rounded-lg text-xs font-bold"></div>
+
+      <!-- LOGIN FORM -->
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Email Address</label>
+          <input id="login-email" type="email" placeholder="sample11wa@gmail.com" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Password</label>
+          <input id="login-password" type="password" placeholder="••••••••" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" required />
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md">
+          Sign In to Portal
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="form-register" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Business / Store Name</label>
+          <input id="reg-business-name" type="text" placeholder="e.g., David Provision store" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Email Address</label>
+          <input id="reg-email" type="email" placeholder="sample11wa@gmail.com" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" required />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-gray-500 mb-1">Password</label>
+          <input id="reg-password" type="password" placeholder="Minimum 6 characters" class="w-full p-3 border rounded-lg text-sm outline-none focus:border-indigo-500" minlength="6" required />
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700 transition shadow-md">
+          Register New Account
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-4 text-xs font-semibold text-gray-400">
+    Market Stock Inventory Portal &copy; Multi-Trader Edition
+  </footer>
+
+  <script type="module">
+    import { registerTrader, loginTrader } from "./auth.js";
+
+    const tabLogin = document.getElementById("tab-login");
+    const tabRegister = document.getElementById("tab-register");
+    const formLogin = document.getElementById("form-login");
+    const formRegister = document.getElementById("form-register");
+    const authAlert = document.getElementById("auth-alert");
+
+    function showAlert(message, isError = true) {
+      authAlert.innerText = message;
+      authAlert.className = `mb-4 p-3 rounded-lg text-xs font-bold ${
+        isError ? "bg-red-100 text-red-700 border border-red-200" : "bg-green-100 text-green-700 border border-green-200"
+      }`;
+      authAlert.classList.remove("hidden");
+    }
+
+    function clearAlert() {
+      authAlert.classList.add("hidden");
+      authAlert.innerText = "";
+    }
+
+    // Toggle between Sign In and Register tabs
+    tabLogin.addEventListener("click", () => {
+      clearAlert();
+      tabLogin.className = "w-1/2 py-3 text-center font-bold text-indigo-600 border-b-2 border-indigo-600 transition";
+      tabRegister.className = "w-1/2 py-3 text-center font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition";
+      formLogin.classList.remove("hidden");
+      formRegister.classList.add("hidden");
+    });
+
+    tabRegister.addEventListener("click", () => {
+      clearAlert();
+      tabRegister.className = "w-1/2 py-3 text-center font-bold text-green-600 border-b-2 border-green-600 transition";
+      tabLogin.className = "w-1/2 py-3 text-center font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition";
+      formRegister.classList.remove("hidden");
+      formLogin.classList.add("hidden");
+    });
+
+    // Login Submission
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      try {
+        await loginTrader(email, password);
+        showAlert("Login successful! Loading dashboard...", false);
+        setTimeout(() => {
+          window.location.href = "market_stock_book.html";
+        }, 800);
+      } catch (error) {
+        showAlert(error.message);
+      }
+    });
+
+    // Registration Submission
+    formRegister.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+      const businessName = document.getElementById("reg-business-name").value.trim();
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-password").value;
+
+      try {
+        await registerTrader(email, password, businessName);
+        showAlert("Account created successfully! Loading dashboard...", false);
+        setTimeout(() => {
+          window.location.href = "market_stock_book.html";
+        }, 800);
+      } catch (error) {
+        showAlert(error.message);
+      }
+    });
+  </script>
+</body>
+</html>
